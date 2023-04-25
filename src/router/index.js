@@ -21,6 +21,11 @@ const router = createRouter({
       path: '/api_page',
       name: 'apipg',
       component: () => import('../views/ApiPage.vue')
+    },
+    {
+      path: '/cenCosto',
+      name: 'Centro_de_Costos',
+      component: () => import('../views/CentroCostosCRUD.vue')
     }
   ]
 })

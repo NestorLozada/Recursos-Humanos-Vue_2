@@ -7,7 +7,7 @@ import HelloWorld from './components/HelloWorld.vue'
 <template>
   <RouterView />
 </template>
-
+<!-- 
 <style>
 .login-container {
   display: flex;
@@ -60,4 +60,4 @@ import HelloWorld from './components/HelloWorld.vue'
 .form-button:hover {
   background-color: #444;
 }
-</style>
+</style> -->
