@@ -1,6 +1,6 @@
 <template>
-  <div class="login-container">
-    <form class="login-form" @submit.prevent="handleSubmit">
+  <div class="container">
+    <form class="form" @submit.prevent="handleSubmit">
       <h2 class="form-title">Iniciar sesión</h2>
       <p v-if="message" value>{{ message }}</p>
       <div class="form-group">
@@ -73,9 +73,10 @@ export default {
       });
       console.log(data);
       this.getComboEmisores();
-      //if(data.success == 1){
-      this.message = data.message;
-      //}
+      if(data.success == 1){
+        this.message = data.message;
+        this.$router.push({ path: "cenCosto" });
+      }
     },
     async getComboEmisores() {
       let url = "http://localhost:8000/api/getEmisor/";
@@ -87,14 +88,14 @@ export default {
 </script>
 
 <style>
-.login-container {
+.container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
 }
 
-.login-form {
+.form {
   width: 90%;
   max-width: 400px;
   padding: 30px;

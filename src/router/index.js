@@ -24,8 +24,13 @@ const router = createRouter({
     },
     {
       path: '/cenCosto',
-      name: 'Centro_de_Costos',
+      name: 'cenCosto',
       component: () => import('../views/CentroCostosCRUD.vue')
+    },
+    {
+      path: '/inCenCosto',
+      name: 'inCenCosto',
+      component: () => import('../views/InsertCC.vue')
     }
   ]
 })

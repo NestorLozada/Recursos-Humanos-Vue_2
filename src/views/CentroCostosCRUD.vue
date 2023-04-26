@@ -1,18 +1,25 @@
 <template>
-  <div class="form-group">
-    <form class="login-form" @submit.prevent="handleSubmit">
-      <h1>Insertar</h1>
-      <p v-if="message" value>{{ message }}</p>
-      <input id="ncodigo" v-model="ncodigo" placeholder="Código" required />
-      <input v-model="nnombre" placeholder="Nombre" required />
-      <button type="submit" class="form-button" @click="agregarCosto">
-        Agregar
-      </button>
-    </form>
-  </div>
-  <div class="container">
+  <div>
     <h1>Lista de costos</h1>
-    <table class="table">
+    <hr />
+    <div class="row">
+      <div class="column" style="margin-right: 500px;">
+        <button class="form-button" @click="inserView">Nuevo</button>
+      </div>
+      <div class="column">
+        <div class="row">
+          <div class="column">
+            <input v-model="search" placeholder="Search" />
+          </div>
+          <div class="column">
+            <button class="form-button" @click="buscarCCostos">Buscar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <hr />
+    <table v-if="search == ''" class="table">
       <thead>
         <tr>
           <th>ID</th>
@@ -25,8 +32,26 @@
         <tr v-for="(costo, index) in costos" :key="index">
           <td>{{ costo.Codigo }}</td>
           <td>{{ costo.NombreCentroCostos }}</td>
-          <td><button @click="editarCosto(index)">Editar</button></td>
-          <td><button @click="eliminarCosto(index)">Eliminar</button></td>
+          <td><button @click="editarCosto(1, index)">Editar</button></td>
+          <td><button @click="eliminarCosto(1, index)">Eliminar</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <table v-if="search != ''" class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Editar</th>
+          <th>Eliminar</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(costo, index) in costosSearch" :key="index">
+          <td>{{ costo.Codigo }}</td>
+          <td>{{ costo.NombreCentroCostos }}</td>
+          <td><button @click="editarCosto(2, index)">Editar</button></td>
+          <td><button @click="eliminarCosto(2, index)">Eliminar</button></td>
         </tr>
       </tbody>
     </table>
@@ -43,6 +68,8 @@ export default {
       message: "",
       ncodigo: "",
       nnombre: "",
+      search: "",
+      costosSearch: ""
     };
   },
   mounted() {
@@ -57,45 +84,55 @@ export default {
       this.costos = data;
     },
 
-    async agregarCosto() {
-      this.message = "";
-      let formData = {
-        codigocentrocostos: this.ncodigo,
-        descripcioncentrocostos: this.nnombre,
-      };
-      let url = "http://localhost:8000/api/insertCentrosCostos/";
-      const { data } = await axios({
-        method: "post",
-        url: url,
-        data: formData,
-      });
-      this.message = data.message;
-      this.obtenerCosto();
+    inserView() {
+      this.$router.push({ path: "inCenCosto" });
     },
 
-    async editarCosto(index) {
-      const costoEditado = prompt("Editar costo", this.costos[index].NombreCentroCostos);
+    async buscarCCostos(){
+      let formData = {
+          descripcioncentrocostos: this.search,
+        };
+        let url = "http://localhost:8000/api/searchCentrosCostos/";
+        const { data } = await axios({
+          method: "post",
+          url: url,
+          data: formData,
+        });
+        console.log(data);
+      this.costosSearch = data;
+    },
+
+    async editarCosto(func, index) {
+      let costosArr = (func == 1) ? this.costos : this.costosSearch
+      const costoEditado = prompt(
+        "Editar costo",
+        costosArr[index].NombreCentroCostos
+      );
       if (costoEditado !== null) {
         this.message = "";
         let formData = {
-          codigocentrocostos: this.costos[index].Codigo,
+          codigocentrocostos: costosArr[index].Codigo,
           descripcioncentrocostos: costoEditado,
         };
+        console.log(formData)
         let url = "http://localhost:8000/api/updateCentrosCostos/";
         const { data } = await axios({
           method: "post",
           url: url,
           data: formData,
         });
-        this.obtenerCosto(); 
+        console.log(data)
+        this.obtenerCosto();
       }
     },
-    async eliminarCosto(index) {
+
+    async eliminarCosto(func, index) {
+      let costosArr = (func == 1) ? this.costos : this.costosSearch
       if (confirm("¿Eliminar costo?")) {
         this.message = "";
         let formData = {
-          codigocentrocostos: this.costos[index].Codigo,
-          descripcioncentrocostos: this.costos[index].NombreCentroCostos,
+          codigocentrocostos: costosArr[index].Codigo,
+          descripcioncentrocostos: costosArr[index].NombreCentroCostos,
         };
         let url = "http://localhost:8000/api/deleteCentrosCostos/";
         const { data } = await axios({
@@ -110,6 +147,33 @@ export default {
 };
 </script>
 <style>
+* {
+  box-sizing: border-box;
+}
+.form-button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  background-color: #333;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Create three equal columns that floats next to each other */
+.column {
+  float: left;
+  padding: 10px;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
 table,
 th,
 td {
