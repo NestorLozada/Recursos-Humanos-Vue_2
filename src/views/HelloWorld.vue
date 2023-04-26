@@ -80,6 +80,7 @@ export default {
     async getComboEmisores() {
       let url = "http://localhost:8000/api/getEmisor/";
       const { data } = await axios.get(url);
+      console.log(data);
       this.comboEmisor = data;
     },
   },
